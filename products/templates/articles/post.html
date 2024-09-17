@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Форма отправки</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- Подключите jQuery -->
+</head>
+<body>
+    <h1>Отправка данных</h1>
+    <form id="productForm">
+        <label for="name">Название:</label>
+        <input type="text" id="name" name="name" required>
+        
+        <label for="description">Описание:</label>
+        <input type="text" id="description" name="description" required>
+        
+        <label for="price">Цена:</label>
+        <input type="number" id="price" name="price" required>
+        
+        <button type="submit">Отправить</button>
+    </form>
+
+    <script>
+        const productForm = document.getElementById('productForm');
+
+        productForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const name = document.getElementById('name').value;
+            const description = document.getElementById('description').value;
+            const price = document.getElementById('price').value;
+
+            const newProduct = { name, description, price };
+
+            try {
+                // Отправка данных на API
+                const response = await fetch('http://127.0.0.1:8000/products', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(newProduct),
+                });
+
+                if (response.ok) {
+                    // Обновляем список продуктов
+                    await fetchProducts();
+                    // Очистка формы
+                    productForm.reset();
+                } else {
+                    console.error('Ошибка при добавлении продукта:', response.statusText);
+                }
+            } catch (error) {
+                console.error('Ошибка при отправке запроса:', error);
+            }
+        });
